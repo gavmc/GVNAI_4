@@ -127,6 +127,9 @@ class LLMClient:
         content = message.get("content", "")
         raw_tool_calls = message.get("tool_calls", [])
 
+        if not raw_tool_calls:
+            raw_tool_calls = []
+
         tool_calls = []
         for tc in raw_tool_calls:
             fn = tc.get("function", {})
