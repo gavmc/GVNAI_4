@@ -1,5 +1,9 @@
 from typing import Dict, Optional, List, Any
+from sqlalchemy.orm import Session
+from sqlalchemy import UUID
+
 from app.tools.base import BaseTool, ToolCategory, ToolResult
+from app.models.models import ToolConnection
 
 
 class ToolRegistry:
@@ -27,11 +31,29 @@ class ToolRegistry:
     def get_tools_by_category(self, category: ToolCategory) -> List[BaseTool]:
         return [t for t in self._tools.values() if t.category == category]
     
-    def get_available_tools(self) -> List[BaseTool]:   # need to impliment this into db later
-        return self.get_builtin_tools()
+    def get_available_tools(self, db: Session, organization_id: UUID) -> List[BaseTool]:   
+        
+        available = []
 
-    def get_llm_functions(self) -> List[Dict[str, Any]]:   # need to impliment this into db later
-        tools = self.get_available_tools()
+        available.extend(self.get_builtin_tools())
+
+        connections = (
+            db.query(ToolConnection).filter(
+                ToolConnection.organization_id == organization_id,
+                ToolConnection.is_active == True,
+            ).all()
+        )
+
+        connected_tool_names = {c.tool_name for c in connections}
+
+        for tool in self.get_connector_tools():
+            if tool.name in connected_tool_names:
+                available.append(tool)
+        
+        return  available
+
+    def get_llm_functions(self, db: Session, organization_id: UUID) -> List[Dict[str, Any]]:   
+        tools = self.get_available_tools(db, organization_id)
         functions = []
         for tool in tools:
             functions.extend(tool.get_llm_schema())

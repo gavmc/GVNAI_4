@@ -2,8 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.db.session import engine
+from app.models.base import Base
 from app.tools.init_tools import register_all_tools
+from app.api.v1.router import api_router
 
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -12,6 +16,7 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url=f"{settings.API_V1_STR}/docs",
 )
+
 
 
 if settings.BACKEND_CORS_ORIGIN:
@@ -24,3 +29,10 @@ if settings.BACKEND_CORS_ORIGIN:
     )
 
 register_all_tools()
+
+app.include_router(api_router, prefix=settings.API_V1_STR)
+
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "version": "2.0.0"}

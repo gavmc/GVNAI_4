@@ -1,6 +1,10 @@
 from app.agents.llm_client import LLMClient, LLMMessage, LLMToolCall
 from app.tools.registry import registry
-from typing import List, Dict, Any
+from app.core.config import settings
+from app.models.models import Conversation, Message
+from sqlalchemy.orm import Session
+from sqlalchemy import UUID
+from typing import List, Dict, Any, Optional
 
 
 SYSTEM_PROMPT = """You are GVNAI, an AI business assistant that helps small businesses manage their operations.
@@ -20,19 +24,23 @@ You have access to tools that let you take real actions: send emails, create inv
 Always prioritize taking action over explaining. If you can do it, do it."""
 
 
-class OrchestratorAgent:
-    def __init__(self):
-        self.llm = LLMClient("ollama", "qwen3:8b")
-        self.max_iterations = 5 # need to put this in settings later
+class AgentOrchestrator:
+    def __init__(self, db: Session, organization_id: UUID, user_id: UUID):
+        self.llm = LLMClient("ollama", "qwen3:8b")  # can update this later
+        self.max_iterations = settings.AGENT_MAX_ITERATIONS
 
-    async def run(self, user_message: str, history: List[LLMMessage]) -> Dict[str, Any]:
+        self.db = db
+        self.organization_id = organization_id
+        self.user_id = user_id
 
-        available_tools = registry.get_llm_functions()
+    async def run(self, user_message: str, conversation_id: Optional[UUID]) -> Dict[str, Any]:
+
+        available_tools = registry.get_llm_functions(self.db, self.organization_id)
 
         tool_summary = self._build_tool_summary()
         system = SYSTEM_PROMPT.format(tool_summary=tool_summary)
 
-        history.append(LLMMessage(role='user', content=user_message))
+        history = self._load_history(conversation_id)
 
         all_tool_calls = []
 
@@ -97,7 +105,7 @@ class OrchestratorAgent:
 
 
     def _build_tool_summary(self) -> str:
-        tools = registry.get_available_tools()
+        tools = registry.get_available_tools(self.db, self.organization_id)
         categories = {}
         for tool in tools:
             cat = tool.category.value
@@ -111,3 +119,17 @@ class OrchestratorAgent:
             lines.extend(tool_lines)
 
         return "\n".join(lines)
+    
+
+    def _load_history(self, conversation_id: UUID) -> List[LLMMessage]:
+        messages = (
+            self.db.query(Message)
+            .filter(Message.conversation_id == conversation_id)
+            .order_by(Message.created_at)
+            .all()
+        )
+        return [
+            LLMMessage(role=m.role, content=m.content, tool_calls=m.tool_calls)
+            for m in messages
+        ]
+

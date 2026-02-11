@@ -20,8 +20,8 @@ class Organization(Base):
 
     users = users = relationship("User", back_populates="organization")
     tool_connections = relationship("ToolConnection", back_populates="organization")
-    workflows = ""
-    conversations = ""
+    workflows = relationship("Workflow", back_populates="organization")
+    conversations = relationship("Conversation", back_populates="organization")
 
 
 class User(Base):
