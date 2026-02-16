@@ -1,35 +1,29 @@
 from agent.llm_client import LLMClient, LLMMessage
+from agent.config import agent_settings
 from tools.registry import registry
-from typing import Literal, Optional, List
+from typing import List
+import json
 
 
 class Agent:
     def __init__(
             self,
-            model: str,
-            provider: Literal["ollama"],
-            system_prompt: str,
-            host: Optional[str] = None,
     ):
-        self.client = LLMClient(provider, host)
-        self.model = model
-        self.system_prompt = system_prompt
+        self.client = LLMClient()
 
     async def run(
         self, 
         messages: List[LLMMessage],
-        max_iterations: int = 15,   # needs to be set in settings later
     ) -> LLMMessage:
         
         tool_calls = []
 
-        for i in range(max_iterations):
+        for i in range(agent_settings.MAX_ITERATIONS):
 
             response = await self.client.chat(
-                model=self.model,
+                model=agent_settings.MODEL_NAME,
                 messages=messages,
                 tools=self._format_tools(),
-                system_prompt=self.system_prompt
             )
 
 
@@ -38,15 +32,22 @@ class Agent:
                     role='assistant',
                     content=response.content,
                     tool_calls=tool_calls,
+                    thinking=response.thinking
                 )
+            
+            messages.append(LLMMessage(
+                role='assistant',
+                content='',
+                tool_calls=response.tool_calls,
+            ))
             
             for tc in response.tool_calls:
                 tool_calls.append(tc)
-                tool_response = registry.call_tool(tc.name, tc.arguments)
+                tool_response = await registry.call_tool(tc.name, tc.arguments)
 
                 messages.append(LLMMessage(
                     role='tool',
-                    content=str(tool_response),
+                    content=json.dumps(tool_response),
                     tool_name=tc.name,
                 ))
 

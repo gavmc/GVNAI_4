@@ -5,14 +5,9 @@ from tools.builtin.test_tool import TestTool
 import asyncio
 
 
-client = LLMClient(provider="ollama")
+client = LLMClient()
 
-orc_agent = Agent(
-    model="qwen3:8b",
-    host="http://127.0.0.1:11434",
-    provider="ollama",
-    system_prompt="You are GVNAI, a helpful assistant",
-)
+orc_agent = Agent()
 
 registry.register(TestTool())
 
@@ -29,7 +24,12 @@ async def run():
 
 
     print("\n\n")
-    print(result)
+    print("Thinking: ", result.thinking)
+    print("\n")
+    print("Content: ", result.content)
+    print("\n")
+    print("Tool calls: ", result.tool_calls)
+    print("\n")
 
 
 print("\n\n")

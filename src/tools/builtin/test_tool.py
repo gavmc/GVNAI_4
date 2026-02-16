@@ -45,7 +45,7 @@ class TestTool(Base):
     def connection(self) -> bool:
         return True
 
-    def call_action(self, action: str, arguments: Dict[str, Any]) -> Any:
+    async def call_action(self, action: str, arguments: Dict[str, Any]) -> Any:
 
         try:
             if action == "get_first_name":

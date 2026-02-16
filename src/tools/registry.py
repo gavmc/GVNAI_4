@@ -18,14 +18,14 @@ class Registry:
 
         return tools
     
-    def call_tool(self, name: str, arguments: Dict[str, Any]) -> Any:
-        connection, action = name.split("__")
+    async def call_tool(self, name: str, arguments: Dict[str, Any]) -> Any:
+        connection, action = name.split("__", 1)
 
         if not connection or not action:
             raise ValueError(f"Invalid tool name: {name}")
         
         if self.connections.get(connection, None):
-            return self.connections[connection].call_action(action, arguments)
+            return await self.connections[connection].call_action(action, arguments)
         
         raise ValueError(f"Connection was not registered: {connection}")
     
