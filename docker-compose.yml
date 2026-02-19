@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: 
+      context: ./src
+      dockerfile: Dockerfile
+    ports:
+      -"5000:5000"
+    env_file:
+      - ./src/.env
+
+  postgres:
+    image: postgres:18.2-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./src/.env
+
+    ports:
+      -"5432:5432"
