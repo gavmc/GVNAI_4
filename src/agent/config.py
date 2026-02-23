@@ -15,12 +15,15 @@ If no tools are needed, respond directly. If a request is ambiguous, ask for cla
 Keep responses concise and professional. You are a business tool, not a chatbot.
 """
 
+naming_system_prompt = "Generate a short sub 6 word title for this conversation based on the user's first message. Return only the title, no punctuation or quotes."
+
 class AgentSettings(BaseSettings):
     MODEL_NAME: str = "qwen3:8b"
     PROVIDER: Literal["ollama"] = "ollama"
     SYSTEM_PROMPT: str = system_prompt
     HOST: str = "http://host.docker.internal:11434"
     MAX_ITERATIONS: int = 15
+    NAMING_SYSTEM_PROMPT: str = naming_system_prompt
 
 
 agent_settings = AgentSettings()
