@@ -19,7 +19,7 @@ class AgentSettings(BaseSettings):
     MODEL_NAME: str = "qwen3:8b"
     PROVIDER: Literal["ollama"] = "ollama"
     SYSTEM_PROMPT: str = system_prompt
-    HOST: str = "http://127.0.0.1:11434"
+    HOST: str = "http://host.docker.internal:11434"
     MAX_ITERATIONS: int = 15
 
 

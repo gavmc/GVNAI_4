@@ -33,7 +33,6 @@ class Base(ABC):
     def connection(self) -> bool:
         ...
 
-    @property
     def formatted(self) -> List[Dict[str, Any]]:
         actions = self.actions
         func_def = []
@@ -65,7 +64,6 @@ class Base(ABC):
 
         return func_def
         
-    @property
     def summary_formatted(self) -> List[Dict[str, Any]]:
         actions = self.actions
         func_def = []

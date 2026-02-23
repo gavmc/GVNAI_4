@@ -14,7 +14,7 @@ class Registry:
 
         for conn in self.connections.values():
             if conn.active:
-                tools.extend(conn.formatted)
+                tools.extend(conn.formatted())
 
         return tools
     
@@ -34,7 +34,7 @@ class Registry:
 
         for conn in self.connections.values():
             if conn.active:
-                tools.extend(conn.summary_formatted)
+                tools.extend(conn.summary_formatted())
 
         return tools
 

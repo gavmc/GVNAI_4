@@ -1,13 +1,28 @@
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from src.config import settings
+from config import settings
+from typing import AsyncGenerator
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
 
 Base = declarative_base()
 
-
 engine = create_async_engine(settings.SQLALCHEMY_DATABASE_URI)
-async_session  = sessionmaker(binf=engine, class_=AsyncSession, expire_on_commit=False)
+async_session  = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
-async def get_db():
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
-        yield session
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
