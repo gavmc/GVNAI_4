@@ -1,6 +1,4 @@
 from pydantic import BaseModel, Field
-from typing import List
-
 
 
 class ToolParameter(BaseModel):
@@ -8,17 +6,17 @@ class ToolParameter(BaseModel):
     type: str
     description: str
     required: bool = True
-    enum: List = Field(default_factory = list)
+    enum: list = Field(default_factory = list)
 
 class ToolAction(BaseModel):
     name: str
     description: str
-    parameters: List[ToolParameter]
+    parameters: list[ToolParameter]
     type: str = "object"
 
 class ToolConnection(BaseModel):
     name: str
     description: str
-    actions: List[ToolAction]
+    actions: list[ToolAction]
     active: bool
     connection: bool

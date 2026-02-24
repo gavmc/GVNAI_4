@@ -1,7 +1,6 @@
 from agent.llm_client import LLMClient, LLMMessage
 from agent.config import agent_settings
 from tools.registry import registry
-from typing import List
 import json
 
 
@@ -9,11 +8,11 @@ class Agent:
     def __init__(
             self,
     ):
-        self.client = LLMClient()
+        self.client = LLMClient(system_prompt=agent_settings.SYSTEM_PROMPT)
 
     async def run(
         self, 
-        messages: List[LLMMessage],
+        messages: list[LLMMessage],
     ) -> LLMMessage:
         
         tool_calls = []

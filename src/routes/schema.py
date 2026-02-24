@@ -1,10 +1,6 @@
 from pydantic import BaseModel
 from agent.schema import LLMMessage
-from typing import List
 
-class ChatRequest(BaseModel):
-    message: LLMMessage
-    session_id: str
 
 class NewSession(BaseModel):
     session_id: str
@@ -14,5 +10,13 @@ class SessionInfo(BaseModel):
     name: str
     edited_at: str
 
-class SessionList(BaseModel):
-    sessions: List[SessionInfo]
+class Sessionlist(BaseModel):
+    sessions: list[SessionInfo]
+
+class ChatResponse(BaseModel):
+    message: LLMMessage
+    session: SessionInfo
+
+class ChatRequest(BaseModel):
+    message: LLMMessage
+    session: SessionInfo

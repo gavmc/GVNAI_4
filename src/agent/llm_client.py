@@ -1,4 +1,3 @@
-from typing import List, Dict
 from agent.schema import LLMMessage, ToolCall
 from agent.config import agent_settings
 import ollama
@@ -7,14 +6,15 @@ import uuid
 
 
 class LLMClient:
-    def __init__(self):
+    def __init__(self, system_prompt: str):
         self.client = ollama.AsyncClient(agent_settings.HOST) if agent_settings.HOST else ollama.AsyncClient()
+        self.system_prompt = system_prompt
 
     async def chat(
             self, 
             model: str,
-            messages: List[LLMMessage],
-            tools: List[Dict] = [],  # need to change at some point
+            messages: list[LLMMessage],
+            tools: list[dict] = [],  # need to change at some point
     ) -> LLMMessage:
         
         if agent_settings.PROVIDER == "ollama":
@@ -26,14 +26,14 @@ class LLMClient:
     async def _ollama_chat(
             self,
             model: str,
-            messages: List[LLMMessage],
-            tools: List[Dict] = [],  # need to change at some point
+            messages: list[LLMMessage],
+            tools: list[dict] = [],  # need to change at some point
     ) -> LLMMessage:
         
         ollama_messages = []
 
         if agent_settings.SYSTEM_PROMPT:
-            ollama_messages.append({'role': 'system', 'content': agent_settings.SYSTEM_PROMPT})
+            ollama_messages.append({'role': 'system', 'content': self.system_prompt})
 
         for msg in messages:
 
