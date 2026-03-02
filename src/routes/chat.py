@@ -3,7 +3,7 @@ from uuid import UUID
 from agent.schema import LLMMessage
 from agent.agent import Agent
 from routes.schema import ChatRequest, Sessionlist, ChatResponse, SessionInfo
-from utils import get_history, save_message, get_sessions, get_summary, create_session
+from utils import get_history, save_messages, get_sessions, get_summary, create_session
 from db import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,36 +15,38 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
     
     agent = Agent()
     name = None
+    session = None
 
     history = await get_history(UUID(request.session.id), db)
 
     if not history:
         name = await get_summary(request.message)
-        session = await create_session(db, name)
+        session = await create_session(db, name.content)
+        session_id = str(session.id)
+
+    else:
+        session_id = request.session.id
 
     history.append(request.message)
-
-    await save_message(UUID(request.session_id), request.message, db)
-
 
     response = await agent.run(
         messages=history,
     )
 
-    await save_message(UUID(request.session_id), response, db)
+    await save_messages(UUID(session_id), [request.message, *response], db)
 
     if session:
         return ChatResponse(
-            message=response,
+            message=response[-1],
             session=SessionInfo(
-                id=session.id,
+                id=str(session.id),
                 name=session.name,
-                edited_at=session.edited_at,
+                edited_at=str(session.edited_at),
             )
         )
 
     return ChatResponse(
-        message=response,
+        message=response[-1],
         session=request.session,
     )
 

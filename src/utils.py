@@ -9,20 +9,19 @@ from uuid import UUID
 from datetime import datetime, timezone
 
 
-async def save_message(session_id: UUID, message: LLMMessage, db: AsyncSession):
-    
+async def save_messages(session_id: UUID, messages: list[LLMMessage], db: AsyncSession):
     current_session = await db.get(Session, session_id)
 
     if not current_session:
         raise ValueError(f"Session does not exist: {session_id}")
-    
-    current_message = Message(message=message.model_dump())
-    current_message.session = current_session
-    current_session.edited_at = datetime.now(timezone.utc)
 
-    db.add(current_message)
+    for message in messages:
+        msg = Message(message=message.model_dump())
+        msg.session = current_session
+        db.add(msg)
+
+    current_session.edited_at = datetime.now(timezone.utc)
     await db.commit()
-    await db.refresh(current_message)
     
 
 
@@ -58,4 +57,4 @@ async def get_sessions(db: AsyncSession) -> list[SessionInfo]:
 
 async def get_summary(message: LLMMessage) -> LLMMessage:
     sum = Summarizer()
-    return await sum.run([message])
+    return await sum.run(message)

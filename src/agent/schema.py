@@ -9,7 +9,7 @@ class ToolCall(BaseModel):
 
 
 class LLMMessage(BaseModel):
-    role: Literal["user", "assistant", "tool", "system", "summary"]
+    role: Literal["user", "assistant", "tool", "system"]
     content: str = ""  
     thinking: str | None = None
     tool_calls: list[ToolCall] | None = None # only for assistant
