@@ -1,7 +1,7 @@
-from agent.llm_client import LLMClient, LLMMessage
+from agent.llm_client import LLMClient
+from agent.schema import LLMMessage
 from agent.config import agent_settings
 from tools.registry import registry
-from typing import List
 import json
 
 
@@ -9,14 +9,15 @@ class Agent:
     def __init__(
             self,
     ):
-        self.client = LLMClient()
+        self.client = LLMClient(system_prompt=agent_settings.SYSTEM_PROMPT)
 
     async def run(
         self, 
-        messages: List[LLMMessage],
-    ) -> LLMMessage:
+        messages: list[LLMMessage],
+    ) -> list[LLMMessage]:
         
         tool_calls = []
+        init_length = len(messages)
 
         for i in range(agent_settings.MAX_ITERATIONS):
 
@@ -28,12 +29,16 @@ class Agent:
 
 
             if not response.tool_calls:
-                return LLMMessage(
-                    role='assistant',
-                    content=response.content,
-                    tool_calls=tool_calls,
-                    thinking=response.thinking
+                messages.append(
+                    LLMMessage(
+                        role='assistant',
+                        content=response.content,
+                        tool_calls=tool_calls,
+                        thinking=response.thinking
+                    )
                 )
+
+                return messages[init_length:]
             
             messages.append(LLMMessage(
                 role='assistant',
@@ -51,14 +56,14 @@ class Agent:
                     tool_name=tc.name,
                 ))
 
-                print(messages[-1])
-                print()
-
-        return LLMMessage(
-            role='assistant',
-            content='Max iterations',
-            tool_calls=tool_calls,
+        messages.append(
+            LLMMessage(
+                role='assistant',
+                content='Max iterations',
+                tool_calls=tool_calls,
+            )
         )
+        return messages[init_length:]
 
 
     def _format_tools(self):

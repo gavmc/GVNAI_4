@@ -1,9 +1,6 @@
 from tools.schema import ToolAction
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
-
-
-
+from typing import Any
 
 
 class Base(ABC):
@@ -20,7 +17,7 @@ class Base(ABC):
 
     @property
     @abstractmethod
-    def actions(self) -> List[ToolAction]:
+    def actions(self) -> list[ToolAction]:
         ...
 
     @property
@@ -33,7 +30,7 @@ class Base(ABC):
     def connection(self) -> bool:
         ...
 
-    def formatted(self) -> List[Dict[str, Any]]:
+    def formatted(self) -> list[dict[str, Any]]:
         actions = self.actions
         func_def = []
 
@@ -64,7 +61,7 @@ class Base(ABC):
 
         return func_def
         
-    def summary_formatted(self) -> List[Dict[str, Any]]:
+    def summary_formatted(self) -> list[dict[str, Any]]:
         actions = self.actions
         func_def = []
 
@@ -83,7 +80,7 @@ class Base(ABC):
     
 
     @abstractmethod
-    async def call_action(self, action: str, arguments: Dict[str, Any]) -> Any:
+    async def call_action(self, action: str, arguments: dict[str, Any]) -> Any:
         ...
 
 

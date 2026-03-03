@@ -1,6 +1,6 @@
 from tools.schema import ToolAction, ToolParameter
 from tools.base import Base
-from typing import List, Dict, Any
+from typing import Any
 
 
 class TestTool(Base):
@@ -16,7 +16,7 @@ class TestTool(Base):
         return "Returns users name as a string"
     
     @property
-    def actions(self) -> List[ToolAction]:
+    def actions(self) -> list[ToolAction]:
         return [
             ToolAction(
                 name="get_first_name",
@@ -45,7 +45,7 @@ class TestTool(Base):
     def connection(self) -> bool:
         return True
 
-    async def call_action(self, action: str, arguments: Dict[str, Any]) -> Any:
+    async def call_action(self, action: str, arguments: dict[str, Any]) -> Any:
 
         try:
             if action == "get_first_name":

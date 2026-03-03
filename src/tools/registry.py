@@ -1,15 +1,15 @@
 from tools.base import Base
-from typing import List, Dict, Any
+from typing import Any
 
 
 class Registry:
     def __init__(self):
-        self.connections: Dict[str, Base] = {}
+        self.connections: dict[str, Base] = {}
 
     def register(self, connection: Base):
         self.connections[connection.name] = connection
 
-    def formatted_tools(self) -> List[Dict[str, Any]]:
+    def formatted_tools(self) -> list[dict[str, Any]]:
         tools = []
 
         for conn in self.connections.values():
@@ -18,7 +18,7 @@ class Registry:
 
         return tools
     
-    async def call_tool(self, name: str, arguments: Dict[str, Any]) -> Any:
+    async def call_tool(self, name: str, arguments: dict[str, Any]) -> Any:
         connection, action = name.split("__", 1)
 
         if not connection or not action:
@@ -29,7 +29,7 @@ class Registry:
         
         raise ValueError(f"Connection was not registered: {connection}")
     
-    def summarize_tools(self) -> List[Dict[str, Any]]:
+    def summarize_tools(self) -> list[dict[str, Any]]:
         tools = []
 
         for conn in self.connections.values():
