@@ -4,7 +4,7 @@ from agent.schema import LLMMessage
 from agent.agent import Agent
 from routes.schema import ChatRequest, Sessionlist, ChatResponse, SessionInfo
 from utils import get_history, save_messages, get_sessions, get_summary, create_session
-from db import get_db
+from core.db import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -31,6 +31,7 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
 
     response = await agent.run(
         messages=history,
+        session_id=session_id
     )
 
     await save_messages(UUID(session_id), [request.message, *response], db)

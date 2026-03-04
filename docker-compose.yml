@@ -7,6 +7,9 @@ services:
       - "8000:8000"
     env_file:
       - ./src/.env
+    networks:
+      - gvnai-backend
+      - gvnai-sandbox
     depends_on:
       db:
         condition: service_healthy
@@ -19,12 +22,23 @@ services:
       - ./src/.env
     ports:
       - "5432:5432"
+    networks:
+      - gvnai-backend
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+networks:
+  gvnai-backend:
+    name: gvnai-backend
+    driver: bridge
+
+  gvnai-sandbox:
+    name: gvnai-sandbox
+    driver: bridge
+    internal: true
 
 volumes:
   postgres_data:

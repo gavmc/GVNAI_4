@@ -1,40 +1,46 @@
 from tools.schema import ToolAction, ToolParameter
 from tools.base import Base
+from core.sandbox import get_client
 from typing import Any
 
 
-class TestTool(Base):
+class Sandbox(Base):
     def __init__(self):
         pass
     
     @property
     def name(self) -> str:
-        return "user_name"
+        return "sandbox"
     
     @property
     def description(self) -> str:
-        return "Returns users name as a string"
+        return "Execute Python code or shell commands in an isolated sandbox environment"
     
     @property
     def actions(self) -> list[ToolAction]:
         return [
             ToolAction(
-                name="get_first_name",
-                description=" Returns users first name",
+                name="run_shell",
+                description="Run shell code and return the output",
                 parameters=[ToolParameter(
-                    name="last_name",
+                    name="command",
                     type="string",
-                    description="The user's last name",
+                    description="The shell command to run",
                     required=True
                 )],
                 type="object"
             ),
             ToolAction(
-                name="get_last_name",
-                description=" Returns users last name",
-                parameters=[],
+                name="run_python",
+                description="Run python code and return the output",
+                parameters=[ToolParameter(
+                    name="code",
+                    type="string",
+                    description="The python code to run",
+                    required=True
+                )],
                 type="object"
-            )
+            ),
         ]
     
     @property
@@ -48,18 +54,14 @@ class TestTool(Base):
     async def call_action(self, action: str, arguments: dict[str, Any], context: dict[str, Any]) -> Any:
 
         try:
-            if action == "get_first_name":
-                return self._get_first_name(**arguments)
-            if action == "get_last_name":
-                return self._get_last_name(**arguments)
+            if action == "run_shell":
+                return self._run_shell(**arguments)
 
         except Exception:
             raise ValueError(f"Error while calling action: {action}")
         
         raise ValueError(f"Action does not exist: {action}")
 
-    def _get_first_name(self, last_name: str) -> str:
-        return "Gavin"
+    def _run_shell(self, command: str) -> str:
+        client = get_client()
     
-    def _get_last_name(self) -> str:
-        return "McLaughlan"

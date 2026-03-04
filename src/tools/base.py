@@ -80,7 +80,7 @@ class Base(ABC):
     
 
     @abstractmethod
-    async def call_action(self, action: str, arguments: dict[str, Any]) -> Any:
+    async def call_action(self, action: str, arguments: dict[str, Any], context: dict[str, Any]) -> Any:
         ...
 
 

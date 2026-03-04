@@ -14,6 +14,7 @@ class Agent:
     async def run(
         self, 
         messages: list[LLMMessage],
+        session_id: str,
     ) -> list[LLMMessage]:
         
         tool_calls = []
@@ -48,7 +49,7 @@ class Agent:
             
             for tc in response.tool_calls:
                 tool_calls.append(tc)
-                tool_response = await registry.call_tool(tc.name, tc.arguments)
+                tool_response = await registry.call_tool(tc.name, tc.arguments, {"session_id": session_id})
 
                 messages.append(LLMMessage(
                     role='tool',
