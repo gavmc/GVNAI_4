@@ -30,6 +30,15 @@ services:
       timeout: 5s
       retries: 5
 
+  sandbox-executor:
+    build:
+      context: .
+      dockerfile: Dockerfile.sandbox
+    image: sandbox-executor
+    profiles:
+      - build-only
+
+
 networks:
   gvnai-backend:
     name: gvnai-backend

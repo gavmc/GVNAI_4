@@ -4,6 +4,7 @@ from config import settings
 from typing import AsyncGenerator
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from core.sandbox import session_manager
 
 Base = declarative_base()
 
@@ -26,3 +27,4 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
+    await session_manager.close_all()

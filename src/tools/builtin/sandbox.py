@@ -1,6 +1,6 @@
 from tools.schema import ToolAction, ToolParameter
 from tools.base import Base
-from core.sandbox import get_client
+from core.sandbox import get_client, session_manager
 from typing import Any
 
 
@@ -52,10 +52,18 @@ class Sandbox(Base):
         return True
 
     async def call_action(self, action: str, arguments: dict[str, Any], context: dict[str, Any]) -> Any:
+        session_id = context["session_id"]
+
+        if not session_id:
+            raise ValueError("No session id in sandbox tool")
+        
+        sandbox = await session_manager.get_or_create(session_id)
 
         try:
             if action == "run_shell":
-                return self._run_shell(**arguments)
+                return await sandbox.exec(arguments["command"])
+            if action == "run_shell":
+                return await sandbox.exec(f"python3 -c {repr(arguments["code"])}")
 
         except Exception:
             raise ValueError(f"Error while calling action: {action}")

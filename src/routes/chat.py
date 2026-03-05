@@ -3,7 +3,7 @@ from uuid import UUID
 from agent.schema import LLMMessage
 from agent.agent import Agent
 from routes.schema import ChatRequest, Sessionlist, ChatResponse, SessionInfo
-from utils import get_history, save_messages, get_sessions, get_summary, create_session
+from utils.utils import get_history, save_messages, get_sessions, get_summary, create_session
 from core.db import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 

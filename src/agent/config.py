@@ -19,7 +19,7 @@ summarize_system_prompt = "Generate a short sub 6 word title for this conversati
 
 
 class AgentSettings(BaseSettings):
-    MODEL_NAME: str = "qwen3.5:9b"
+    MODEL_NAME: str = "qwen3.5:4b"
     PROVIDER: Literal["ollama"] = "ollama"
     SYSTEM_PROMPT: str = system_prompt
     HOST: str = "http://host.docker.internal:11434"
@@ -27,7 +27,7 @@ class AgentSettings(BaseSettings):
 
 
 class SummarizerSettings(BaseSettings):
-    MODEL_NAME: str = "qwen3.5:9b"
+    MODEL_NAME: str = "qwen3.5:4b"
     PROVIDER: Literal["ollama"] = "ollama"
     SYSTEM_PROMPT: str = summarize_system_prompt
     HOST: str = "http://host.docker.internal:11434"
