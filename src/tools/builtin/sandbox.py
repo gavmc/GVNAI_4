@@ -62,7 +62,7 @@ class Sandbox(Base):
         try:
             if action == "run_shell":
                 return await sandbox.exec(arguments["command"])
-            if action == "run_shell":
+            if action == "run_python":
                 return await sandbox.exec(f"python3 -c {repr(arguments["code"])}")
 
         except Exception:
