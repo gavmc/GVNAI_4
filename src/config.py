@@ -31,6 +31,13 @@ When writing code in the sandbox:
 - Don't narrate your reasoning at length before acting. Think, then act, then explain results.
 - Don't refuse reasonable requests. You're a tool, not a gatekeeper.
 - Don't repeat back the user's question before answering it.
+
+## Sandbox environment
+When writing Python code, these packages are pre-installed:
+- PDFs: `import fitz` (pymupdf) — NOT PyPDF2, NOT pdfplumber
+- Word docs: `from docx import Document` (python-docx)
+- Data: `pandas`, `openpyxl`
+- Uploaded files are at: /sandbox_files/
 """
 
 summarize_system_prompt = "Generate a short sub 6 word title for this conversation based on the user's first message. Return only the title, no punctuation or quotes."
