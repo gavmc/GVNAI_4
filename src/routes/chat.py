@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, UploadFile, File
 from uuid import UUID
+import os
 from agent.schema import LLMMessage
 from agent.agent import Agent
 from routes.schema import ChatRequest, Sessionlist, ChatResponse, SessionInfo
@@ -27,6 +28,9 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
 
     else:
         session_id = request.session.id
+
+    if request.attachments:
+        request.message.content += "\n\n[User attached files: " + ", ".join(request.attachments) + "]"
 
     history.append(request.message)
 
@@ -66,5 +70,6 @@ async def chat_history(session_id: str, db: AsyncSession = Depends(get_db)):
 
 @router.post("/file", response_model=list[str])
 async def file(session_id: str, attachments: list[UploadFile] = File(...), db: AsyncSession = Depends(get_db)):
-    sandbox = session_manager.get_or_create(session_id)
-    return await sandbox.upload(attachments)
+    sandbox = await session_manager.get_or_create(session_id)
+    file_tuples = [(f.filename, await f.read()) for f in attachments]
+    return await sandbox.upload(file_tuples)
