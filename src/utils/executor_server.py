@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-import asyncio, uvicorn
+import asyncio
+import uvicorn
 
 app = FastAPI()
 
@@ -14,6 +15,7 @@ async def exec_command(payload: dict):
     stdout, stderr = await process.communicate()
 
     return {
+        "command": payload["command"],
         "stdout": stdout.decode(),
         "stderr": stderr.decode(),
         "exit_code": process.returncode,

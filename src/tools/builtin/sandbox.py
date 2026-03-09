@@ -70,6 +70,4 @@ class Sandbox(Base):
         
         raise ValueError(f"Action does not exist: {action}")
 
-    def _run_shell(self, command: str) -> str:
-        client = get_client()
     
