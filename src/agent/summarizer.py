@@ -1,5 +1,5 @@
 from agent.llm_client import LLMClient, LLMMessage
-from agent.config import summarizer_settings
+from config import summarizer_settings
 
 
 class Summarizer:

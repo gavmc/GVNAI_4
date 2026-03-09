@@ -1,6 +1,6 @@
 from agent.llm_client import LLMClient
 from agent.schema import LLMMessage
-from agent.config import agent_settings
+from config import agent_settings
 from tools.registry import registry
 import json
 

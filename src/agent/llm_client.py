@@ -1,5 +1,5 @@
 from agent.schema import LLMMessage, ToolCall
-from agent.config import agent_settings
+from config import agent_settings
 import ollama
 import uuid
 
