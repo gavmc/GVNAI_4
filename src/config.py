@@ -33,6 +33,7 @@ class SummarizerSettings(BaseSettings):
     SYSTEM_PROMPT: str = summarize_system_prompt
     HOST: str = "http://host.docker.internal:11434"
 
+
 class Config(BaseSettings):
     SQLALCHEMY_DATABASE_URI: str = f"postgresql+asyncpg://{os.getenv("POSTGRES_USER")}:{os.getenv("POSTGRES_PASSWORD")}@{os.getenv("POSTGRES_HOST")}:5432/{os.getenv("POSTGRES_DB")}"
 

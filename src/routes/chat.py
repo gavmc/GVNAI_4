@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from uuid import UUID
 from agent.schema import LLMMessage
 from agent.agent import Agent
 from routes.schema import ChatRequest, Sessionlist, ChatResponse, SessionInfo
 from utils.utils import get_history, save_messages, get_sessions, get_summary, create_session
 from core.db import get_db
+from core.sandbox import session_manager
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
@@ -62,3 +63,8 @@ async def sessions(db: AsyncSession = Depends(get_db)):
 @router.get('/history/{session_id}', response_model=list[LLMMessage])
 async def chat_history(session_id: str, db: AsyncSession = Depends(get_db)):
     return await get_history(UUID(session_id), db)
+
+@router.post("/file", response_model=list[str])
+async def file(session_id: str, attachments: list[UploadFile] = File(...), db: AsyncSession = Depends(get_db)):
+    sandbox = session_manager.get_or_create(session_id)
+    return await sandbox.upload(attachments)

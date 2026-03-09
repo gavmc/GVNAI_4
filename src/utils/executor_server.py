@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 import asyncio
 import uvicorn
+import os
 
 app = FastAPI()
 
@@ -20,6 +21,19 @@ async def exec_command(payload: dict):
         "stderr": stderr.decode(),
         "exit_code": process.returncode,
     }
+
+@app.post("/upload")
+async def upload(files: list[UploadFile] = File(...)):
+    paths = []
+
+    for file in files:
+        path = os.path.join(os.getenv("UPLOAD_PATH"), file.filename)
+        contents = await file.read()
+        with open(path, "wb") as f:
+            f.write(contents)
+        paths.append(path)
+    return {"paths": paths}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

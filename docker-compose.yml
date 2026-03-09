@@ -39,6 +39,8 @@ services:
       context: .
       dockerfile: Dockerfile.sandbox
     image: sandbox-executor
+    environment:
+      - UPLOAD_PATH=/user-data/upload
     command: echo "done"
 
 

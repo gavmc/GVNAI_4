@@ -20,3 +20,4 @@ class ChatResponse(BaseModel):
 class ChatRequest(BaseModel):
     message: LLMMessage
     session: SessionInfo
+    attachments: list[str] | None = None

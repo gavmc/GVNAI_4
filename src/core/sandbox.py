@@ -55,6 +55,16 @@ class SandboxSession:
             )
             return resp.json()
         
+    async def upload(self, files: list[tuple[str, bytes]]) -> list[str]:
+
+        async with httpx.AsyncClient() as http:
+            resp = await http.post(
+                f"http://sandbox-{self.session_id}:8000/upload",
+                files=[("files", (filename, contents)) for filename, contents in files],
+                timeout=30,
+            )
+            return resp.json()["paths"]
+        
     async def destroy(self):
         if self.container:
             self.container.stop()
