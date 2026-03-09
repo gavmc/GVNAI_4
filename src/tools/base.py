@@ -50,7 +50,7 @@ class Base(ABC):
                             param.name: {
                                 "type": param.type,
                                 "description": param.description,
-                                "enum": param.enum,
+                                **({"enum": param.enum} if param.enum else {}),
                             }
                         for param in action.parameters} 
                     }

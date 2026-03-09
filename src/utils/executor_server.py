@@ -5,6 +5,19 @@ import os
 
 app = FastAPI()
 
+def get_unique_path(directory: str, filename: str) -> str:
+    path = os.path.join(directory, filename)
+    if not os.path.exists(path):
+        return path
+
+    name, ext = os.path.splitext(filename)
+    counter = 1
+    while True:
+        path = os.path.join(directory, f"{name}_{counter}{ext}")
+        if not os.path.exists(path):
+            return path
+        counter += 1
+
 @app.post("/exec")
 async def exec_command(payload: dict):
     process = await asyncio.create_subprocess_shell(
@@ -27,7 +40,7 @@ async def upload(files: list[UploadFile] = File(...)):
     paths = []
 
     for file in files:
-        path = os.path.join(os.getenv("UPLOAD_PATH"), file.filename)
+        path = get_unique_path(os.getenv("UPLOAD_PATH"), file.filename)
         contents = await file.read()
         with open(path, "wb") as f:
             f.write(contents)

@@ -41,7 +41,7 @@ services:
     image: sandbox-executor
     environment:
       - UPLOAD_PATH=/user-data/upload
-    command: echo "done"
+    command: echo "finished building"
 
 
 networks:

@@ -2,6 +2,7 @@ from tools.schema import ToolAction, ToolParameter
 from tools.base import Base
 from core.sandbox import session_manager
 from typing import Any
+import base64
 
 
 class Sandbox(Base):
@@ -63,7 +64,9 @@ class Sandbox(Base):
             if action == "run_shell":
                 return await sandbox.exec(arguments["command"])
             if action == "run_python":
-                return await sandbox.exec(f"python3 -c {repr(arguments["code"])}")
+                code = arguments["code"]
+                encoded = base64.b64encode(code.encode()).decode()
+                return await sandbox.exec(f"echo '{encoded}' | base64 -d > /tmp/_script.py && python3 /tmp/_script.py")
 
         except Exception:
             raise ValueError(f"Error while calling action: {action}")

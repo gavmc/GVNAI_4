@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from uuid import UUID
-import os
+import json
 from agent.schema import LLMMessage
 from agent.agent import Agent
 from routes.schema import ChatRequest, Sessionlist, ChatResponse, SessionInfo
@@ -13,8 +13,9 @@ router = APIRouter()
 
 
 @router.post("/", response_model=ChatResponse)
-async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
+async def chat(data: str = Form(...), attachments: list[UploadFile] | None = File(None), db: AsyncSession = Depends(get_db)):
     
+    request = ChatRequest(**json.loads(data))
     agent = Agent()
     name = None
     session = None
@@ -29,8 +30,11 @@ async def chat(request: ChatRequest, db: AsyncSession = Depends(get_db)):
     else:
         session_id = request.session.id
 
-    if request.attachments:
-        request.message.content += "\n\n[User attached files: " + ", ".join(request.attachments) + "]"
+    if attachments:
+        sandbox = await session_manager.get_or_create(session_id)
+        file_tuples = [(f.filename, await f.read()) for f in attachments]
+        paths = await sandbox.upload(file_tuples)
+        request.message.content += "\n\n[User attached files: " + ", ".join(paths) + "]"
 
     history.append(request.message)
 
@@ -68,8 +72,3 @@ async def sessions(db: AsyncSession = Depends(get_db)):
 async def chat_history(session_id: str, db: AsyncSession = Depends(get_db)):
     return await get_history(UUID(session_id), db)
 
-@router.post("/file", response_model=list[str])
-async def file(session_id: str, attachments: list[UploadFile] = File(...), db: AsyncSession = Depends(get_db)):
-    sandbox = await session_manager.get_or_create(session_id)
-    file_tuples = [(f.filename, await f.read()) for f in attachments]
-    return await sandbox.upload(file_tuples)

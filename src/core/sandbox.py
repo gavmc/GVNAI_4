@@ -31,6 +31,9 @@ class SandboxSession:
             network="gvnai-sandbox",
             name=f"sandbox-{self.session_id}",
             mem_limit="512m",
+            environment={
+                "UPLOAD_PATH": "/sandbox_files",
+            },
         )
         await self._check_ready()
 
