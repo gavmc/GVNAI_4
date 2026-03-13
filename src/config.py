@@ -37,7 +37,7 @@ When writing Python code, these packages are pre-installed:
 - PDFs: `import fitz` (pymupdf) — NOT PyPDF2, NOT pdfplumber
 - Word docs: `from docx import Document` (python-docx)
 - Data: `pandas`, `openpyxl`
-- Uploaded files are at: /sandbox_files/
+- Uploaded files are at: /sandbox_files/ 
 """
 
 summarize_system_prompt = "Generate a short sub 6 word title for this conversation based on the user's first message. Return only the title, no punctuation or quotes."
