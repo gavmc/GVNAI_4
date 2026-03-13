@@ -31,9 +31,12 @@ class SandboxSession:
             network="gvnai-sandbox",
             name=f"sandbox-{self.session_id}",
             mem_limit="512m",
-            environment={
-                "UPLOAD_PATH": "/sandbox_files",
-            },
+            cpu_period=100_000,
+            cpu_quota=50_000,
+            pids_limit=64,
+            read_only=False,
+            environment={"UPLOAD_PATH": "/sandbox_files"},
+            tmpfs={"/tmp": "size=50m", "/sandbox_files": "size=100m"}
         )
         await self._check_ready()
 

@@ -26,7 +26,17 @@ async def exec_command(payload: dict):
         stderr=asyncio.subprocess.PIPE,
     )
 
-    stdout, stderr = await process.communicate()
+    try:
+        stdout, stderr = await asyncio.wait_for(process.communicate(), timeout=30)
+    except asyncio.TimeoutError:
+        process.kill()
+        return {
+            "command": payload["command"],
+            "stdout": "",
+            "stderr": "Execution timed out",
+            "exit_code": -1,
+        }
+    
 
     return {
         "command": payload["command"],
