@@ -15,11 +15,12 @@ class LLMClient:
             self, 
             model: str,
             messages: list[LLMMessage],
-            tools: list[dict] = [],  # need to change at some point
+            tools: list[dict] = [],
+            think=True,
     ) -> LLMMessage:
         
         if agent_settings.PROVIDER == "ollama":
-            return await self._ollama_chat(model, messages, tools)
+            return await self._ollama_chat(model, messages, tools, think)
         
         raise ValueError(f"Unsupported provider: {agent_settings.PROVIDER}")
     
@@ -27,11 +28,12 @@ class LLMClient:
             self,
             model: str,
             messages: list[LLMMessage],
-            tools: list[dict] = []
+            tools: list[dict] = [],
+            think=True,
     ) -> AsyncIterator[dict]:
         
         if agent_settings.PROVIDER == "ollama":
-            async for chunk in self._ollama_chat_stream(model, messages, tools):
+            async for chunk in self._ollama_chat_stream(model, messages, tools, think):
                 yield chunk
         else:
             raise ValueError(f"Unsupported provider: {agent_settings.PROVIDER}")
@@ -80,6 +82,7 @@ class LLMClient:
             model: str,
             messages: list[LLMMessage],
             tools: list[dict] = [],
+            think=True,
     ) -> LLMMessage:
         
         ollama_messages = await self._build_ollama_chat(messages)
@@ -88,7 +91,7 @@ class LLMClient:
             model=model, 
             messages=ollama_messages,
             tools=tools,
-            think=True,
+            think=think,
         )
 
         message = response["message"]
@@ -111,6 +114,7 @@ class LLMClient:
             model: str,
             messages: list[LLMMessage],
             tools: list[dict] = [],
+            think=True,
     ) -> AsyncIterator[dict]:
         
         ollama_messages = await self._build_ollama_chat(messages)
@@ -119,7 +123,7 @@ class LLMClient:
             model=model, 
             messages=ollama_messages,
             tools=tools,
-            think=True,
+            think=think,
             stream=True
         )
 

@@ -46,6 +46,7 @@ class Agent:
                 role='assistant',
                 content='',
                 tool_calls=response.tool_calls,
+                thinking=response.thinking,
             ))
             
             for tc in response.tool_calls:
@@ -118,6 +119,7 @@ class Agent:
                 role="assistant",
                 content=current_msg.content,
                 tool_calls=current_msg.tool_calls,
+                thinking=current_msg.thinking,
             ))
  
             for tc in current_msg.tool_calls:
@@ -153,7 +155,7 @@ class Agent:
         final = LLMMessage(
             role="assistant",
             content="Max iterations reached",
-            tool_calls=tool_calls,
+            tool_calls=None,
         )
         messages.append(final)
         yield StreamEvent(event="done", data="Max iterations reached", tool_calls=tool_calls)

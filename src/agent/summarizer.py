@@ -16,6 +16,7 @@ class Summarizer:
         response = await self.client.chat(
             model=summarizer_settings.MODEL_NAME,
             messages=[message],
+            think=False,
         )
 
         return response
