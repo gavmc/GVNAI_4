@@ -7,4 +7,9 @@ RUN mkdir -p /sandbox_files
 
 COPY src/utils/executor_server.py /executor_server.py
 
+RUN adduser --disabled-password --no-create-home sandbox \
+    && chown sandbox:sandbox /sandbox_files /tmp
+
+USER sandbox
+
 CMD ["python", "/executor_server.py"]
