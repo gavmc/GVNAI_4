@@ -36,7 +36,7 @@ class SandboxSession:
             pids_limit=64,
             read_only=False,
             environment={"UPLOAD_PATH": "/sandbox_files"},
-            tmpfs={"/tmp": "size=50m", "/sandbox_files": "size=100m"}
+            tmpfs={"/tmp": "size=50m"}
         )
         await self._check_ready()
 
